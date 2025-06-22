@@ -40,7 +40,7 @@ import { Pie, Bar } from 'react-chartjs-2';
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
 
 const ReportOverview = () => {
-  const { teamId } = useParams();
+  const { reportId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const theme = useTheme();
