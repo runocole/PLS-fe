@@ -118,8 +118,15 @@ const ReportOverview = () => {
   
   // Fetch team report on component mount
   useEffect(() => {
-    dispatch(fetchReport(teamId));
-  }, [dispatch, teamId]);
+  dispatch(fetchReports()).then((action) => {
+    if (action.payload) {
+      const reportForTeam = action.payload.find(r => r.team === parseInt(teamId));
+      if (reportForTeam) {
+        dispatch(fetchReport(reportForTeam.id));
+      }
+    }
+  });
+}, [dispatch, teamId]);
   
   const handleBackClick = () => {
     navigate('/dashboard');
