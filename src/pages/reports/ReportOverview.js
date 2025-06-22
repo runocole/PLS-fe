@@ -49,13 +49,13 @@ const ReportOverview = () => {
   const { currentReport: report, loading, error } = useSelector((state) => state.reports);
   const { teams } = useSelector((state) => state.teams);
   
-  // Find the current team based on teamId
-  const currentTeam = teams?.find(team => team?.id === parseInt(teamId)) || {
-    id: parseInt(teamId),
-    name: 'Unknown Team',
-    logo: '/logos/default.png',
-    color: theme.palette.primary.main
-  };
+  // Find the current team 
+  const currentTeam = teams?.find(team => team?.id === report?.team) || {
+  id: report?.team,
+  name: 'Unknown Team',
+  logo: '/logos/default.png',
+  color: theme.palette.primary.main
+};
   
   // Prepare chart data from real report data
   const prepareChartData = () => {
@@ -116,17 +116,9 @@ const ReportOverview = () => {
     },
   };
   
-  // Fetch team report on component mount
   useEffect(() => {
-  dispatch(fetchReports()).then((action) => {
-    if (action.payload) {
-      const reportForTeam = action.payload.find(r => r.team === parseInt(teamId));
-      if (reportForTeam) {
-        dispatch(fetchReport(reportForTeam.id));
-      }
-    }
-  });
-}, [dispatch, teamId]);
+  dispatch(fetchReport(reportId));
+}, [dispatch, reportId]);
   
   const handleBackClick = () => {
     navigate('/dashboard');
@@ -294,7 +286,14 @@ const ReportOverview = () => {
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
                       <Typography variant="h5" fontWeight="bold">
-                        {report?.match_stats?.passAccuracy || 0}%
+                        if (!report) return (
+  <Box sx={{ p: 3 }}>
+    <Alert severity="info">No report available for this ID.</Alert>
+    <Button onClick={handleBackClick} startIcon={<BackIcon />} variant="contained" sx={{ mt: 2 }}>
+      Back to Dashboard
+    </Button>
+  </Box>
+);
                       </Typography>
                       <Chip label="+5% vs League Avg" size="small" color="success" />
                     </Box>
