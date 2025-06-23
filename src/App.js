@@ -84,7 +84,7 @@ function App() {
                 
                 {/* Analyst Routes */}
                 <Route path="/analyst-dashboard" element={<AnalystDashboard />} />
-                <Route path="/report-editor/:teamId" element={<ReportEditor />} />
+                <Route path="/reports/editor/:reportId" element={<ReportEditor />} />
                 <Route path="/reports/editor/new" element={<ReportEditor />} />
                 <Route path="/teams/create" element={<CreateTeam />} />
                 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
+import { useNotifications } from '../context/NotificationContext';
 import {
   Box,
   Drawer,
@@ -95,6 +96,7 @@ const DashboardLayout = () => {
   const [settingsAnchorEl, setSettingsAnchorEl] = useState(null);
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const { notifications, loading } = useNotifications();
 
   // Get menu items based on user role
   const getMenuItems = () => {
@@ -368,57 +370,31 @@ const DashboardLayout = () => {
       </Popover>
 
       {/* Notifications Menu */}
-      <Menu
-        anchorEl={notificationsAnchorEl}
-        open={Boolean(notificationsAnchorEl)}
-        onClose={handleNotificationsClose}
-        PaperProps={{
-          sx: { width: 320, maxHeight: 400, mt: 1 }
-        }}
-      >
-        <MenuItem onClick={handleNotificationsClose}>
-          <Box sx={{ width: '100%' }}>
-            <Typography variant="subtitle2">New Report Available</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Liverpool tactical analysis has been updated
-            </Typography>
-          </Box>
-        </MenuItem>
-        <Divider />
-        <MenuItem onClick={handleNotificationsClose}>
-          <Box sx={{ width: '100%' }}>
-            <Typography variant="subtitle2">Scout Request</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Manchester City requested a new scouting report
-            </Typography>
-          </Box>
-        </MenuItem>
-        <Divider />
-        <MenuItem onClick={handleNotificationsClose}>
-          <Box sx={{ width: '100%' }}>
-            <Typography variant="subtitle2">System Update</Typography>
-            <Typography variant="body2" color="text.secondary">
-              New features have been added to the platform
-            </Typography>
-          </Box>
-        </MenuItem>
-      </Menu>
+       <Menu
+  anchorEl={notificationsAnchorEl}
+  open={Boolean(notificationsAnchorEl)}
+  onClose={handleNotificationsClose}
+  PaperProps={{ sx: { width: 320, maxHeight: 400, mt: 1 } }}
+>
+  {loading ? (
+    <MenuItem disabled>Loading...</MenuItem>
+  ) : notifications.length === 0 ? (
+    <MenuItem disabled>No notifications</MenuItem>
+  ) : (
+    notifications.map((note) => (
+      <MenuItem key={note.id} onClick={handleNotificationsClose}>
+        <Box sx={{ width: '100%' }}>
+          <Typography variant="subtitle2">{note.message}</Typography>
+          <Typography variant="body2" color="text.secondary">
+            {note.time}
+          </Typography>
+        </Box>
+      </MenuItem>
+    ))
+  )}
+</Menu>
 
-      {/* Settings Menu */}
-      <Menu
-        anchorEl={settingsAnchorEl}
-        open={Boolean(settingsAnchorEl)}
-        onClose={handleSettingsClose}
-        PaperProps={{
-          sx: { width: 200, mt: 1 }
-        }}
-      >
-        <MenuItem onClick={handleSettingsClose}>Account Settings</MenuItem>
-        <MenuItem onClick={handleSettingsClose}>Preferences</MenuItem>
-        <MenuItem onClick={handleSettingsClose}>Notifications</MenuItem>
-        <Divider />
-        <MenuItem onClick={handleSettingsClose}>Help & Support</MenuItem>
-      </Menu>
+     
 
       {/* Profile Menu */}
       <Menu

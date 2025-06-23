@@ -120,9 +120,17 @@ const ReportsOverview = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { teams, loading: teamsLoading } = useSelector((state) => state.teams);
-  const { reports, loading } = useSelector((state) => state.reports);
-  const reportsLoading = loading?.reports;
+  const {
+  teams, 
+  loading: teamLoadingState 
+} = useSelector((state) => state.teams);
+  const { 
+  reports, 
+  loading : reportLoadingState
+  }= useSelector((state) => state.reports);
+  const teamsLoading =teamLoadingState?.teams;
+  //console.log('Reports:', reports);
+  const reportsLoading = reportLoadingState?.reports;
   
   // Local state
   const [filteredReports, setFilteredReports] = useState([]);
@@ -133,28 +141,28 @@ const ReportsOverview = () => {
   const [sortField, setSortField] = useState('lastUpdated');
   const [sortDirection, setSortDirection] = useState('desc');
   const [error, setError] = useState(null);
+  const {user} = useSelector((state) => state.auth);
   
   // Menu state
   const menuOpen = Boolean(anchorEl);
   
   // Load teams and reports data
   useEffect(() => {
-    const loadData = async () => {
-      setError(null);
-      try {
-        console.log('Starting data load...');
-        const results = await Promise.all([
-          dispatch(fetchTeams()).unwrap(),
-          dispatch(fetchReports()).unwrap()
-        ]);
-        console.log('Data loaded:', results);
-      } catch (error) {
-        console.error('Failed to load data:', error);
-        setError(error?.message || 'Failed to load reports. Please check your connection and try again.');
-      }
-    };
-    loadData();
-  }, [dispatch]);
+  const loadData = async () => {
+    setError(null);
+    try {
+      console.log('Fetching teams and reports...');
+      const teamsResult = await dispatch(fetchTeams()).unwrap();
+      const reportsResult = await dispatch(fetchReports()).unwrap();
+      console.log('Teams:', teamsResult);
+      console.log('Reports:', reportsResult);
+    } catch (error) {
+      console.error('Error loading data:', error);
+      setError(error?.message || 'Failed to load reports.');
+    }
+  };
+  loadData();
+}, [dispatch]);
   
   // Filter and sort reports based on current state
   useEffect(() => {
@@ -163,15 +171,12 @@ const ReportsOverview = () => {
       return;
     }
     
-    let filtered = reports.map(report => {
-      const team = teams?.find(t => t.id === report.team);
-      return {
+    let filtered = reports.map(report => ({
         ...report,
-        teamName: team?.name || 'Unknown Team',
-        teamLogo: team?.logo || null,
+        teamName: report.team?.name || 'Unknown Team',
+        teamLogo: report.team?.logo || null,
         completion: calculateCompletion(report) || 0
-      };
-    });
+      }));
     
     // Apply search filter
     if (searchTerm) {
@@ -257,8 +262,7 @@ const ReportsOverview = () => {
   
   // Handle edit report
   const handleEditReport = (reportId) => {
-    navigate(`/scout/${reportId}`);
-    handleMenuClose();
+    navigate(`/reports/editor/${reportId}`);
   };
   
   // Handle delete report
@@ -325,6 +329,7 @@ const ReportsOverview = () => {
   };
   
   // Show loading state
+  console.log ("Loading states", { teamsLoading, reportsLoading});
   if (teamsLoading || reportsLoading) {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 4 }}>
@@ -557,6 +562,7 @@ const ReportsOverview = () => {
                         </Box>
                       </TableCell>
                       <TableCell align="right">
+                        {user?.role === 'analyst' && (
                         <Button
                           variant="outlined"
                           size="small"
@@ -566,6 +572,7 @@ const ReportsOverview = () => {
                         >
                           Continue
                         </Button>
+                        )}
                         <IconButton
                           size="small"
                           onClick={(event) => handleMenuOpen(event, report.id)}

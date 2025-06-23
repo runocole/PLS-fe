@@ -10,15 +10,20 @@ export const NotificationProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const fetchNotifications = async () => {
-    try {
-      const res = await axios.get('/api/activities/');
-      setNotifications(res.data);
-    } catch (e) {
-      // handle error
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const token = localStorage.getItem('token');
+    const res = await axios.get('/api/activities/', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    setNotifications(res.data);
+  } catch (e) {
+    console.error('Failed to fetch notifications', e);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchNotifications();

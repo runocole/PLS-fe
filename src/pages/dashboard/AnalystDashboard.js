@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTeams } from '../../store/slices/teamsSlice';
+import {useNotifications} from '../../context/NotificationContext.js';
 import {
   Grid,
   Card,
@@ -36,15 +37,6 @@ import {
   Check as CompletedIcon,
   MoreHoriz as NotStartedIcon,
 } from '@mui/icons-material';
-
-
-// Mock recent activities data
-const recentActivities = [
-  { id: 1, message: "Updated Manchester City scouting report", time: "2 hours ago" },
-  { id: 2, message: "Created new Liverpool performance analysis", time: "Yesterday" },
-  { id: 3, message: "Marked Arsenal report as complete", time: "2 days ago" },
-  { id: 4, message: "Added Chelsea tactical overview", time: "3 days ago" },
-];
 
 
 // Status chip component
@@ -153,9 +145,10 @@ const TeamCard = ({ team, status, onCreateReport }) => {
 
 // Main AnalystDashboard component
 const AnalystDashboard = () => {
+  const { notifications, loading } = useNotifications();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { teams, loading } = useSelector((state) => state.teams);
+  const { teams, loading: teamLoading } = useSelector((state) => state.teams);
   
   // State for notification and profile menus
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
@@ -248,7 +241,7 @@ const AnalystDashboard = () => {
         </Typography>
         <Divider />
         <List sx={{ width: '100%', p: 0 }}>
-          {recentActivities.map((activity) => (
+          {notifications.map((activity) => (
             <ListItem key={activity.id}>
               <ListItemAvatar>
                 <Avatar sx={{ bgcolor: 'primary.main' }}>
