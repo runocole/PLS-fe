@@ -128,7 +128,7 @@ const TeamCard = ({ team, status, onCreateReport }) => {
             variant="contained" 
             fullWidth 
             startIcon={status === 'not-started' ? <AddIcon /> : <EditIcon />}
-            onClick={() => onCreateReport(team.id)}
+           onClick={() => onCreateReport(team)}
             sx={{ 
               background: `linear-gradient(45deg, ${team.color} 30%, ${alpha(team.color, 0.8)} 90%)`,
               boxShadow: `0px 3px 10px ${alpha(team.color, 0.5)}`,
@@ -195,10 +195,10 @@ const AnalystDashboard = () => {
   }, [teams, tokens]);
 
   // Navigation handler for creating/editing reports
-  const handleCreateReport = (teamId) => {
-    navigate(`/report-editor/${teamId}`);
-  };
-  
+     const handleCreateReport = (team) => {
+  navigate(`/reports/editor/new?team=${team.id}`);
+};
+
   // Handlers for notification menu
   const handleNotificationMenuOpen = (event) => {
     setNotificationAnchorEl(event.currentTarget);
@@ -298,13 +298,13 @@ const AnalystDashboard = () => {
           {teams && teams.length > 0 ? (
             teams.map((team) => (
               <Grid item xs={12} sm={6} md={4} lg={3} key={team.id}>
-                <TeamCard 
-                  team={team} 
-                  status={teamStatuses[team.id] || 'not-started'}
-                  onCreateReport={handleCreateReport}
-                />
-              </Grid>
-            ))
+                  <TeamCard 
+                      team={team}
+                      status={teamStatuses[team.id] || 'not-started'}
+                      onCreateReport={handleCreateReport} 
+                        />
+                     </Grid>
+                      ))
           ) : (
             <Grid item xs={12}>
               <Typography variant="body1">No teams found.</Typography>

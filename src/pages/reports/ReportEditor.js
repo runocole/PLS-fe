@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchReport, createReport, updateReport } from '../../store/slices/reportsSlice';
+import {useLocation} from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -38,10 +39,13 @@ import {
 } from '@mui/icons-material';
 
 const ReportEditor = () => {
-  const { teamId } = useParams();
+  // const { teamId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const theme = useTheme();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const teamId = queryParams.get('team');
   
   // Get reports and team data from store
   const { currentReport: report, loading, error } = useSelector((state) => state.reports);
@@ -152,6 +156,26 @@ const getErrorMessage = (err) => {
       });
     }
   }, [saveSuccess]);
+
+  const [team, setTeam] = useState(null);
+  const tokens= useSelector((state) => state.auth.tokens);
+  useEffect(() => {
+    const fetchTeam = async () => {
+      try {
+      const res = await fetch(`/api/teams/${teamId}/`,{
+        headers : {
+          Authorization: 'Bearer ${tokens}',
+        },
+      });
+      const data = await res.json();
+      setTeam(data);
+    } catch (err) {
+      console.error('Failed to fetch team:', err);
+    }
+  };
+    if (teamId) fetchTeam();
+  }, [teamId, tokens]);
+
   
   // Form handlers
   const handleInputChange = (section, field, value) => {
@@ -225,14 +249,18 @@ const getErrorMessage = (err) => {
   const handleSave = async () => {
     try {
       if (report?.id) {
+        console.log("SENDING updateReport:", {
+  reportId: report.id,
+  reportData: { ...formState, team_id: teamId }
+});
         await dispatch(updateReport({ 
           reportId: report.id, 
-          reportData: { ...formState, team: teamId } 
+          reportData: { ...formState, team_id: parseInt(teamId) } 
         })).unwrap();
       } else {
         await dispatch(createReport({ 
           ...formState, 
-          team: teamId 
+          team_id: parseInt(teamId) 
         })).unwrap();
       }
       handleSuccessfulSave();
@@ -261,12 +289,12 @@ const getErrorMessage = (err) => {
       if (report?.id) {
         await dispatch(updateReport({ 
           reportId: report.id, 
-          reportData: { ...updatedData, team: teamId }
+         reportData: { ...updatedData, team_id: parseInt(teamId) }
         })).unwrap();
       } else {
         await dispatch(createReport({ 
           ...updatedData, 
-          team: teamId 
+          team_id: teamId 
         })).unwrap();
       }
       handleSuccessfulSave();
@@ -314,6 +342,10 @@ const getErrorMessage = (err) => {
   
   return (
     <Box sx={{ maxWidth: '1200px', mx: 'auto', p: 3 }}>
+      <Typography variant="h4" sx={{ mb: 3 }}>
+  {team ? `${team.name} Scout Report` : 'Loading Team Info...'}
+</Typography>
+
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}

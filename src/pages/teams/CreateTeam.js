@@ -1,3 +1,4 @@
+// CreateTeam.js
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -19,7 +20,6 @@ import {
 import {
   SportsSoccer as TeamIcon,
   ColorLens as ColorIcon,
-  Image as LogoIcon,
   CloudUpload as UploadIcon,
   Delete as DeleteIcon,
 } from '@mui/icons-material';
@@ -33,7 +33,7 @@ const CreateTeam = () => {
   const [formData, setFormData] = useState({
     name: '',
     logo: null,
-    color: '#6A1B9A',
+    color: '#1E88E5', 
   });
 
   const [loading, setLoading] = useState(false);
@@ -43,10 +43,7 @@ const CreateTeam = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleLogoChange = (e) => {
@@ -57,7 +54,7 @@ const CreateTeam = () => {
         return;
       }
       if (!file.type.startsWith('image/')) {
-        setError('Please upload an image file.');
+        setError('Please upload a valid image.');
         return;
       }
       setFormData(prev => ({ ...prev, logo: file }));
@@ -82,7 +79,7 @@ const CreateTeam = () => {
       navigate('/analyst-dashboard');
     } catch (err) {
       console.error('Error creating team:', err);
-      setError(err.response?.data?.message || err.response?.data?.error || 'Failed to create team');
+      setError(err.response?.data?.message || err.response?.data?.error || 'Something went wrong.');
     } finally {
       setLoading(false);
     }
@@ -100,273 +97,184 @@ const CreateTeam = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        p: 3,
+        width: '100vw',
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
-        backgroundColor: '#121212',
-        color: '#fff',
+        justifyContent: 'center',
+        background: 'radial-gradient(circle at center, #0A0A0A 0%, #000000 100%)',
+        backgroundImage: `url('/stadium-texture-dark.jpg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        overflow: 'auto',
+        px: { xs: 2, sm: 5 },
       }}
     >
       <Paper
-        elevation={24}
+        elevation={12}
         sx={{
-          p: { xs: 3, sm: 5 },
           width: '100%',
-          maxWidth: 700,
-          borderRadius: 4,
-          background: 'linear-gradient(135deg, #1E1E1E 0%, #2D2D2D 100%)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(10px)',
-          mt: 4,
-          mb: 4,
+          maxWidth: 1200,
+          display: 'flex',
+          flexDirection: 'row',
+          p: 5,
+          borderRadius: 6,
+          background: 'linear-gradient(135deg, #0d1117 0%, #0f2027 100%)',
+          boxShadow: '0 0 60px rgba(30, 136, 229, 0.3)',
         }}
       >
-        <Box sx={{ mb: 5, textAlign: 'center' }}>
-          <TeamIcon 
-            sx={{ 
-              fontSize: 80, 
-              color: '#8E24AA',
-              mb: 3,
-              filter: 'drop-shadow(0 0 10px rgba(142, 36, 170, 0.3))'
-            }} 
-          />
-          <Typography 
-            variant="h3" 
-            component="h1" 
-            fontWeight="bold"
-            sx={{ 
-              mb: 2, 
-              color: '#fff',
-              textShadow: '0 0 20px rgba(142, 36, 170, 0.3)'
-            }}
-          >
-            Create New Team
+        {/* Left Banner */}
+        <Box
+          sx={{
+            flex: 1,
+            pr: 5,
+            borderRight: '1px solid rgba(255,255,255,0.1)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            color: '#fff',
+          }}
+        >
+          <TeamIcon sx={{ fontSize: 100, color: '#1E88E5', mb: 3 }} />
+          <Typography variant="h2" fontWeight="bold" gutterBottom>
+            Draft Your Dream Team
           </Typography>
-          <Typography 
-            variant="h6" 
-            sx={{ 
-              color: 'rgba(255, 255, 255, 0.7)',
-              fontWeight: 300
-            }}
-          >
-            Add a new team to your scouting portfolio
+          <Typography variant="h6" sx={{ opacity: 0.7 }}>
+            Add a new squad to your scouting portfolio. Make it iconic.
           </Typography>
         </Box>
 
-        {error && (
-          <Alert 
-            severity="error" 
-            sx={{ 
-              mb: 4,
-              backgroundColor: 'rgba(211, 47, 47, 0.1)',
-              color: '#ff1744',
-              '& .MuiAlert-icon': {
-                color: '#ff1744'
-              }
-            }}
-          >
-            {error}
-          </Alert>
-        )}
-
-        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-          <Grid container spacing={4}>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Team Name"
-                name="name"
-                required
-                value={formData.name}
-                onChange={handleChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <TeamIcon sx={{ color: '#8E24AA' }} />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 2,
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    '&:hover': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                    },
-                    '& fieldset': {
-                      borderColor: 'rgba(255, 255, 255, 0.1)',
-                    },
-                  },
-                  '& .MuiInputLabel-root': {
-                    color: 'rgba(255, 255, 255, 0.7)',
-                  },
-                  '& .MuiOutlinedInput-input': {
-                    color: '#fff',
-                  },
-                }}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <Box sx={{ 
-                display: 'flex', 
-                flexDirection: 'column', 
-                alignItems: 'center', 
-                width: '100%',
-                p: 4,
-                borderRadius: 2,
-                border: '2px dashed rgba(142, 36, 170, 0.5)',
-                backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  borderColor: '#8E24AA',
-                }
-              }}>
-                <input
-                  accept="image/*"
-                  type="file"
-                  style={{ display: 'none' }}
-                  ref={fileInputRef}
-                  onChange={handleLogoChange}
+        {/* Right Form */}
+        <Box sx={{ flex: 1, pl: 5 }}>
+          {error && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {error}
+            </Alert>
+          )}
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={4}>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Team Name"
+                  name="name"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <TeamIcon sx={{ color: '#1E88E5' }} />
+                      </InputAdornment>
+                    ),
+                  }}
                 />
-                {!logoPreview ? (
-                  <Button
-                    variant="contained"
-                    onClick={() => fileInputRef.current.click()}
-                    sx={{ 
-                      mb: 2, 
-                      borderRadius: 2,
-                      textTransform: 'none',
-                      fontSize: '1.1rem',
-                      fontWeight: 500,
-                      bgcolor: '#8E24AA',
-                      color: '#fff',
-                      px: 4,
-                      py: 2,
-                      '&:hover': { 
-                        bgcolor: '#6A1B9A',
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 5px 15px rgba(142, 36, 170, 0.4)'
-                      }
-                    }}
-                    startIcon={<UploadIcon />}
-                  >
-                    Upload Team Logo
-                  </Button>
-                ) : (
-                  <Fade in={true}>
-                    <Box sx={{ position: 'relative' }}>
-                      <img
-                        src={logoPreview}
-                        alt="Team Logo Preview"
-                        style={{ 
-                          width: 150,
-                          height: 150,
-                          objectFit: 'cover',
-                          borderRadius: 16,
-                          border: '3px solid #8E24AA',
-                          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)'
-                        }}
-                      />
-                      <Tooltip title="Remove Logo" arrow>
-                        <IconButton
-                          onClick={removeLogo}
-                          sx={{
-                            position: 'absolute',
-                            top: -12,
-                            right: -12,
-                            bgcolor: '#ff1744',
-                            color: '#fff',
-                            '&:hover': {
-                              bgcolor: '#d50000'
-                            }
-                          }}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
-                  </Fade>
-                )}
-              </Box>
-            </Grid>
+              </Grid>
 
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Team Color"
-                name="color"
-                type="color"
-                value={formData.color}
-                onChange={handleChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <ColorIcon sx={{ color: formData.color }} />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
+              <Grid item xs={12}>
+                <Box
+                  sx={{
+                    border: '2px dashed rgba(255,255,255,0.2)',
                     borderRadius: 2,
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    '&:hover': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                    },
-                    '& fieldset': {
-                      borderColor: 'rgba(255, 255, 255, 0.1)',
-                    },
-                  },
-                  '& .MuiInputLabel-root': {
-                    color: 'rgba(255, 255, 255, 0.7)',
-                  },
-                  '& .MuiOutlinedInput-input': {
-                    color: '#fff',
-                    height: '50px',
-                  },
-                }}
-              />
-            </Grid>
+                    p: 3,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    backgroundColor: 'rgba(255,255,255,0.03)',
+                  }}
+                >
+                  <input
+                    accept="image/*"
+                    type="file"
+                    ref={fileInputRef}
+                    style={{ display: 'none' }}
+                    onChange={handleLogoChange}
+                  />
+                  {!logoPreview ? (
+                    <Button
+                      variant="contained"
+                      startIcon={<UploadIcon />}
+                      onClick={() => fileInputRef.current.click()}
+                      sx={{ bgcolor: '#1E88E5' }}
+                    >
+                      Upload Team Logo
+                    </Button>
+                  ) : (
+                    <Fade in={true}>
+                      <Box sx={{ position: 'relative' }}>
+                        <img
+                          src={logoPreview}
+                          alt="Logo"
+                          style={{
+                            width: 150,
+                            height: 150,
+                            objectFit: 'cover',
+                            borderRadius: 8,
+                            border: '3px solid #1E88E5',
+                          }}
+                        />
+                        <Tooltip title="Remove Logo">
+                          <IconButton
+                            onClick={removeLogo}
+                            sx={{
+                              position: 'absolute',
+                              top: -10,
+                              right: -10,
+                              bgcolor: '#e53935',
+                              color: '#fff',
+                              '&:hover': { bgcolor: '#b71c1c' },
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    </Fade>
+                  )}
+                </Box>
+              </Grid>
 
-            <Grid item xs={12}>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                size="large"
-                disabled={loading}
-                sx={{
-                  mt: 2,
-                  py: 2,
-                  borderRadius: 2,
-                  textTransform: 'none',
-                  fontSize: '1.2rem',
-                  fontWeight: 600,
-                  letterSpacing: 1,
-                  bgcolor: '#8E24AA',
-                  color: '#fff',
-                  boxShadow: '0 8px 24px rgba(142, 36, 170, 0.3)',
-                  '&:hover': {
-                    bgcolor: '#6A1B9A',
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 12px 30px rgba(142, 36, 170, 0.4)',
-                  },
-                  '&:active': {
-                    transform: 'translateY(0)',
-                  }
-                }}
-              >
-                {loading ? (
-                  <CircularProgress size={28} color="inherit" />
-                ) : (
-                  'Create Team'
-                )}
-              </Button>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Team Color"
+                  name="color"
+                  type="color"
+                  value={formData.color}
+                  onChange={handleChange}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <ColorIcon sx={{ color: formData.color }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <Button
+                  fullWidth
+                  type="submit"
+                  variant="contained"
+                  size="large"
+                  disabled={loading}
+                  sx={{
+                    bgcolor: '#1E88E5',
+                    py: 2,
+                    fontSize: '1.1rem',
+                    fontWeight: 700,
+                    letterSpacing: 1,
+                    '&:hover': {
+                      bgcolor: '#1565C0',
+                    },
+                  }}
+                >
+                  {loading ? <CircularProgress size={24} color="inherit" /> : 'Create Team'}
+                </Button>
+              </Grid>
             </Grid>
-          </Grid>
-        </form>
+          </form>
+        </Box>
       </Paper>
     </Box>
   );
