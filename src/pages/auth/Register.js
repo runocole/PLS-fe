@@ -407,13 +407,13 @@ const Register = () => {
                     </InputAdornment>
                   }
                 >
-                  <MenuItem value="Analyst">
+                  <MenuItem value="analyst">
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <AnalystIcon sx={{ color: '#4A148C' }} />
                       <Typography>Analyst</Typography>
                     </Box>
                   </MenuItem>
-                  <MenuItem value="Coach">
+                  <MenuItem value="coach">
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <CoachIcon sx={{ color: '#4A148C' }} />
                       <Typography>Coach</Typography>
