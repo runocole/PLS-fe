@@ -131,6 +131,7 @@ const reportsSlice = createSlice({
     clearDeleteError: (state) => { state.error.delete = null; },
     clearCurrentReport: (state) => { state.currentReport = null; },
     clearTeamReports: (state) => { state.teamReports = []; },
+    setCurrentReport: (state, action) => { state.currentReport = action.payload; },
   },
   extraReducers: (builder) => {
     builder
@@ -259,6 +260,7 @@ export const {
   clearDeleteError,
   clearCurrentReport,
   clearTeamReports,
+  setCurrentReport,
 } = reportsSlice.actions;
 
 export default reportsSlice.reducer;

@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchReport } from '../../store/slices/reportsSlice';
-import { fetchTeamReports, fetchMyReport } from '../../store/slices/reportsSlice';
+import { fetchReport, fetchTeamReports, fetchMyReport, setCurrentReport } from '../../store/slices/reportsSlice';
 import {
   Box,
   Typography,
@@ -47,11 +46,16 @@ const { user } = useSelector(state => state.auth);
 
 useEffect(() => {
     if (user.role === "coach") {
-        dispatch(fetchTeamReports(teamId));
+        dispatch(fetchTeamReports(teamId)).then((action) => {
+            if (action.payload && action.payload.length > 0) {
+                dispatch(setCurrentReport(action.payload[0]));
+            }
+        });
     } else if (user.role === "analyst") {
         dispatch(fetchMyReport(teamId));
     }
 }, [dispatch, teamId, user.role]);
+
 
   const navigate = useNavigate();
   const theme = useTheme();
