@@ -115,6 +115,8 @@ const Dashboard = () => {
   const { searchTerm, setSearchTerm } = useSearch();
   const { notifications, loading: notificationsLoading } = useNotifications();
   const [anchorEl, setAnchorEl] = useState(null);
+  const user = useSelector((state) => state.auth.user);
+
 
   const handleOpenMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -130,9 +132,14 @@ const Dashboard = () => {
   }, [dispatch]);
   
   // Navigation handler for scouting teams
-  const handleScoutTeam = (teamId) => {
+ const handleScoutTeam = (teamId) => {
+    if (user?.role !== 'coach') {
+        alert("Only coaches can scout teams.");
+        return;
+    }
     navigate(`/reports/${teamId}`);
-  };
+};
+
   
   return (
     <Box>

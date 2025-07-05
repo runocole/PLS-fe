@@ -82,10 +82,16 @@ api.interceptors.response.use(
 export const authAPI = {
   login: async (credentials) => {
     const response = await api.post('/auth/login/', credentials);
-    if (response.data && response.data.tokens?.access) {
-      localStorage.setItem('tokens', JSON.stringify(response.data.tokens));
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+    if (response.data) {
+    const { tokens, user } = response.data;
+    if (tokens) {
+        localStorage.setItem('tokens', JSON.stringify(tokens));
     }
+    if (user) {
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('userRole', user.role);  // Update this too
+    }
+}
     return response;
   },
 
@@ -161,6 +167,8 @@ export const reportsAPI = {
   deleteReport: (id) => api.delete(`/reports/${id}/`),
   getTeamReports: (teamId) => api.get(`/reports/team/${teamId}/`),
   updateReportStatus: (id, status) => api.put(`/reports/${id}/status/`, { status }),
+  getTeamReports: (teamId) => api.get(`/reports/team/${teamId}/`),
+getMyReport: (teamId) => api.get(`/reports/my-report/team/${teamId}/`), 
 };
 
 // Players API

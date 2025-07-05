@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { reportsAPI } from '../../services/api';
 
 // Async thunks
+
 export const fetchReports = createAsyncThunk(
   'reports/fetchReports',
   async (_, { rejectWithValue }) => {
@@ -22,10 +23,36 @@ export const fetchReport = createAsyncThunk(
       return response.data;
     } catch (error) {
       if (error.response?.status === 404) {
-        // No report exists yet, return null
         return null;
       }
       return rejectWithValue(error.response?.data || 'Failed to fetch report');
+    }
+  }
+);
+
+export const fetchTeamReports = createAsyncThunk(
+  'reports/fetchTeamReports',
+  async (teamId, { rejectWithValue }) => {
+    try {
+      const response = await reportsAPI.getTeamReports(teamId);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch team reports');
+    }
+  }
+);
+
+export const fetchMyReport = createAsyncThunk(
+  'reports/fetchMyReport',
+  async (teamId, { rejectWithValue }) => {
+    try {
+      const response = await reportsAPI.getMyReport(teamId);
+      return response.data;
+    } catch (error) {
+      if (error.response?.status === 404) {
+        return null;
+      }
+      return rejectWithValue(error.response?.data || 'Failed to fetch your report');
     }
   }
 );
@@ -66,12 +93,17 @@ export const deleteReport = createAsyncThunk(
   }
 );
 
+// Initial State
+
 const initialState = {
   reports: [],
   currentReport: null,
+  teamReports: [],
   loading: {
     reports: false,
     report: false,
+    teamReports: false,
+    myReport: false,
     create: false,
     update: false,
     delete: false,
@@ -79,31 +111,26 @@ const initialState = {
   error: {
     reports: null,
     report: null,
+    teamReports: null,
+    myReport: null,
     create: null,
     update: null,
     delete: null,
   },
 };
 
+// Slice
+
 const reportsSlice = createSlice({
   name: 'reports',
   initialState,
   reducers: {
-    clearReportError: (state) => {
-      state.error.report = null;
-    },
-    clearCreateError: (state) => {
-      state.error.create = null;
-    },
-    clearUpdateError: (state) => {
-      state.error.update = null;
-    },
-    clearDeleteError: (state) => {
-      state.error.delete = null;
-    },
-    clearCurrentReport: (state) => {
-      state.currentReport = null;
-    },
+    clearReportError: (state) => { state.error.report = null; },
+    clearCreateError: (state) => { state.error.create = null; },
+    clearUpdateError: (state) => { state.error.update = null; },
+    clearDeleteError: (state) => { state.error.delete = null; },
+    clearCurrentReport: (state) => { state.currentReport = null; },
+    clearTeamReports: (state) => { state.teamReports = []; },
   },
   extraReducers: (builder) => {
     builder
@@ -121,6 +148,7 @@ const reportsSlice = createSlice({
         state.error.reports = action.payload;
         state.reports = [];
       })
+
       // Fetch Single Report
       .addCase(fetchReport.pending, (state) => {
         state.loading.report = true;
@@ -135,6 +163,37 @@ const reportsSlice = createSlice({
         state.error.report = action.payload;
         state.currentReport = null;
       })
+
+      // Fetch Team Reports (Coach)
+      .addCase(fetchTeamReports.pending, (state) => {
+        state.loading.teamReports = true;
+        state.error.teamReports = null;
+      })
+      .addCase(fetchTeamReports.fulfilled, (state, action) => {
+        state.loading.teamReports = false;
+        state.teamReports = action.payload || [];
+      })
+      .addCase(fetchTeamReports.rejected, (state, action) => {
+        state.loading.teamReports = false;
+        state.error.teamReports = action.payload;
+        state.teamReports = [];
+      })
+
+      // Fetch My Report (Analyst)
+      .addCase(fetchMyReport.pending, (state) => {
+        state.loading.myReport = true;
+        state.error.myReport = null;
+      })
+      .addCase(fetchMyReport.fulfilled, (state, action) => {
+        state.loading.myReport = false;
+        state.currentReport = action.payload;
+      })
+      .addCase(fetchMyReport.rejected, (state, action) => {
+        state.loading.myReport = false;
+        state.error.myReport = action.payload;
+        state.currentReport = null;
+      })
+
       // Create Report
       .addCase(createReport.pending, (state) => {
         state.loading.create = true;
@@ -151,6 +210,7 @@ const reportsSlice = createSlice({
         state.loading.create = false;
         state.error.create = action.payload;
       })
+
       // Update Report
       .addCase(updateReport.pending, (state) => {
         state.loading.update = true;
@@ -172,6 +232,7 @@ const reportsSlice = createSlice({
         state.loading.update = false;
         state.error.update = action.payload;
       })
+
       // Delete Report
       .addCase(deleteReport.pending, (state) => {
         state.loading.delete = true;
@@ -197,7 +258,7 @@ export const {
   clearUpdateError,
   clearDeleteError,
   clearCurrentReport,
+  clearTeamReports,
 } = reportsSlice.actions;
 
-export default reportsSlice.reducer; 
-
+export default reportsSlice.reducer;

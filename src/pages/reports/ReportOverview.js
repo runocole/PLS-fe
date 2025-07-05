@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchReport } from '../../store/slices/reportsSlice';
+import { fetchTeamReports, fetchMyReport } from '../../store/slices/reportsSlice';
 import {
   Box,
   Typography,
@@ -40,9 +41,19 @@ import { Pie, Bar } from 'react-chartjs-2';
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
 
 const ReportOverview = () => {
-  const { reportId } = useParams();
+ const { teamId } = useParams();
+ const dispatch = useDispatch();
+const { user } = useSelector(state => state.auth);
+
+useEffect(() => {
+    if (user.role === "coach") {
+        dispatch(fetchTeamReports(teamId));
+    } else if (user.role === "analyst") {
+        dispatch(fetchMyReport(teamId));
+    }
+}, [dispatch, teamId, user.role]);
+
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const theme = useTheme();
   
   // Get reports and team data from store
@@ -116,10 +127,6 @@ const ReportOverview = () => {
     },
   };
   
-  useEffect(() => {
-  dispatch(fetchReport(reportId));
-}, [dispatch, reportId]);
-  
   const handleBackClick = () => {
     navigate('/dashboard');
   };
@@ -133,6 +140,7 @@ const ReportOverview = () => {
   }
   
   if (error?.report) {
+    
     return (
       <Box sx={{ p: 3 }}>
         <Alert severity="error" sx={{ mb: 2 }}>
@@ -144,7 +152,17 @@ const ReportOverview = () => {
       </Box>
     );
   }
-  
+  if (!report) {
+  return (
+    <Box sx={{ p: 3 }}>
+      <Alert severity="info">No report available for this team yet.</Alert>
+      <Button onClick={handleBackClick} startIcon={<BackIcon />} variant="contained" sx={{ mt: 2 }}>
+        Back to Dashboard
+      </Button>
+    </Box>
+  );
+}
+
   return (
     <Box>
       <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -285,16 +303,10 @@ const ReportOverview = () => {
                       Passing Accuracy
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                      <Typography variant="h5" fontWeight="bold">
-                        if (!report) return (
-  <Box sx={{ p: 3 }}>
-    <Alert severity="info">No report available for this ID.</Alert>
-    <Button onClick={handleBackClick} startIcon={<BackIcon />} variant="contained" sx={{ mt: 2 }}>
-      Back to Dashboard
-    </Button>
-  </Box>
-);
-                      </Typography>
+                    <Typography variant="h5" fontWeight="bold">
+  {report?.match_stats?.passAccuracy || 0}%
+</Typography>
+
                       <Chip label="+5% vs League Avg" size="small" color="success" />
                     </Box>
                     <LinearProgress 

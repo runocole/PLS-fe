@@ -136,7 +136,7 @@ const HeroContent = styled(Grid)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'flex-start', // Left alignment
   [theme.breakpoints.down('sm')]: {
-    justifyContent: 'flex-start', // Keep left-aligned on small screens too
+    justifyContent: 'flex-start', 
   },
 }));
 
@@ -336,7 +336,7 @@ const Landing = () => {
             {teams.map((team) => (
               <TeamMenuItem key={team.name} onClick={handleTeamMenuClose}>
                 <TeamLogo src={team.logo} alt={team.name} />
-                <Typography variant="body1" sx={{ color: '#000000', fontWeight: 600, fontFamily: '"Poppins", sans-serif' }}>
+                <Typography variant="body1" sx={{ color: '#ffffff', fontWeight: 600, fontFamily: '"Poppins", sans-serif' }}>
                   {team.name}
                 </Typography>
               </TeamMenuItem>
@@ -392,7 +392,7 @@ const Landing = () => {
                       color: '#fff',
                       fontWeight: 800,
                       fontSize: { xs: '2rem', md: '3rem', lg: '4rem' },
-                      textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+                      textShadow: '2px 2px 4px rgb(255, 255, 255)',
                       letterSpacing: '-1px',
                       fontFamily: '"Montserrat", sans-serif',
                       textAlign: 'left',

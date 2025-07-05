@@ -80,7 +80,9 @@ function App() {
                 {/* Coach Routes */}
                 <Route path="/coach-dashboard" element={<Dashboard />} />
                 <Route path="/reports/view" element={<ReportsOverview />} />
+                <Route path="/reports/view/:reportId" element={<ReportOverview />} />
                 <Route path="/reports/:teamId" element={<ReportOverview />} />
+
                 
                 {/* Analyst Routes */}
                 <Route path="/analyst-dashboard" element={<AnalystDashboard />} />
