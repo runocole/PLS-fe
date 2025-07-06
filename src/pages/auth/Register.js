@@ -550,7 +550,7 @@ const Register = () => {
       sx={{ 
         minHeight: '100vh', 
         display: 'flex',
-        background: 'linear-gradient(135deg, #4A148C 0%, #7B1FA2 100%)',
+        background: 'linear-gradient(135deg,rgb(0, 0, 0) 0%,rgb(42, 19, 52) 100%)',
         position: 'relative',
         overflow: 'hidden'
       }}

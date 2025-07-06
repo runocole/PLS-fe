@@ -146,11 +146,11 @@ useEffect(() => {
     printContent.innerHTML = `
       <div style="text-align: center; color: white;">
         <img src="${currentTeam.logo}" alt="${currentTeam.name}" width="100" style="margin-bottom: 15px;" />
-        <h1 style="font-family: cursive; font-size: 32px; color: #4fc3f7;">${currentTeam.name} Scouting Report</h1>
+        <h1 style="font-family Georgia, Times, "Times New Roman", serif; font-size: 32px; color: #4fc3f7;">${currentTeam.name} Scouting Report</h1>
         <hr style="margin: 20px 0; border-color: #ffffff55;" />
       </div>
 
-      <h2 style="font-family: cursive; font-size: 24px; color: #f06292;">Key Players</h2>
+      <h2 style="font-family: Georgia, Times, "Times New Roman", serif; font-size: 24px; color: #f06292;">Key Players</h2>
       <table style="width: 100%; border-collapse: collapse; color: white;">
         <thead style="background-color: #1a1a1a;">
           <tr>
@@ -174,7 +174,7 @@ useEffect(() => {
         </tbody>
       </table>
 
-      <h2 style="font-family: cursive; font-size: 24px; color: #4db6ac;">Match Stats</h2>
+      <h2 style="font-family: Georgia, Times, "Times New Roman", serif; font-size: 24px; color: #4db6ac;">Match Stats</h2>
       <table style="width: 100%; border-collapse: collapse; color: white;">
         ${
           Object.entries(report.match_stats || {}).map(([key, value]) => `
@@ -186,13 +186,13 @@ useEffect(() => {
         }
       </table>
 
-      <h2 style="font-family: cursive; font-size: 24px; color: #9575cd;">Tactical Summary</h2>
+      <h2 style="font-family: Georgia, Times, "Times New Roman", serif; font-size: 24px; color: #9575cd;">Tactical Summary</h2>
       <p><strong>Formation:</strong> ${report.tactical_summary?.formation || '-'}</p>
       <p><strong>Overview:</strong> ${report.tactical_summary?.overview || '-'}</p>
       <p><strong>Strengths:</strong> ${report.tactical_summary?.strengths || '-'}</p>
       <p><strong>Weaknesses:</strong> ${report.tactical_summary?.weaknesses || '-'}</p>
 
-      <h2 style="font-family: cursive; font-size: 24px; color: #ff8a65;">Performance Insights</h2>
+      <h2 style="font-family: Georgia, Times, "Times New Roman", serif; font-size: 24px; color: #ff8a65;">Performance Insights</h2>
       <p>${report.performance_insights || 'No insights provided.'}</p>
 
       <hr style="border-color: #ffffff55;" />
@@ -206,7 +206,7 @@ useEffect(() => {
           <title>${currentTeam.name} Scouting Report</title>
           <style>
             body {
-              font-family: 'Segoe UI', cursive, sans-serif;
+              font-family: Georgia, Times, "Times New Roman", serif;
               background-color: black;
               color: white;
               padding: 30px;

@@ -310,10 +310,7 @@ const Landing = () => {
       <StyledAppBar>
         <Toolbar>
           <Box sx={{ display: 'flex', alignItems: 'flex-start', flexGrow: 1 }}>
-            <SportsSoccer sx={{ fontSize: '22px', color: '#9c27b0', mr: 1 }} />
-            <Typography variant="h3" sx={{ fontWeight: 700, color: '#fff', fontFamily: '"Montserrat", sans-serif' }}>
-              PREMIER LEAGUE SCOUTING
-            </Typography>
+            
           </Box>
           
           <TeamButton 
@@ -399,7 +396,7 @@ const Landing = () => {
                       marginLeft: '-8px', // Better alignment with icon
                     }}
                   >
-                    Scouter
+                    SCOUTER
                   </Typography>
                 </LogoContainer>
                 <Typography

@@ -189,7 +189,7 @@ const Login = () => {
       sx={{ 
         minHeight: '100vh', 
         display: 'flex',
-        background: 'linear-gradient(135deg, #4A148C 0%, #7B1FA2 100%)',
+        background: 'linear-gradient(135deg,rgb(0, 0, 0) 0%,rgb(42, 19, 52) 100%)',
         position: 'relative',
         overflow: 'hidden'
       }}
@@ -268,7 +268,7 @@ const Login = () => {
                   textShadow: '0px 2px 4px rgba(0,0,0,0.2)'
                 }}
               >
-                Welcome Back!
+               SCOUTER
               </Typography>
               
               <Typography 
@@ -302,14 +302,14 @@ const Login = () => {
                   <Typography variant="body1" sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
                     ✓ Detailed tactical analysis
                   </Typography>
-                  <Typography variant="body1" sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
+                  <Typography variant="body1" sx={{ mb: 1, display: 'flex', alignItems: 'left' }}>
                     ✓ Create and edit your own scout report
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
                     ✓ Interactive charts and statistics
                   </Typography>
                   <Typography variant="body1" sx={{ display: 'flex', alignItems: 'center' }}>
-                    ✓ Seamless scy experience
+                    ✓ Seamless experience
                   </Typography>
                 </Box>
               </Box>
@@ -333,7 +333,7 @@ const Login = () => {
             <Box 
               sx={{ 
                 height: '8px', 
-                background: 'linear-gradient(90deg, #4A148C, #7B1FA2)'
+                background: 'linear-gradient(90deg,rgb(54, 0, 59),rgb(49, 5, 68))'
               }}
             />
             
@@ -356,12 +356,13 @@ const Login = () => {
               )}
               
               <Typography 
-                variant="h4" 
+                fontFamily={"sans-serif"}
                 component="h1" 
                 fontWeight="bold" 
+                fontSize={"24px"}
                 sx={{ mb: 1, color: '#4A148C' }}
               >
-                Sign In
+               Welcome Back!
               </Typography>
               
               <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
@@ -382,45 +383,6 @@ const Login = () => {
               )}
               
               <Box component="form" onSubmit={handleSubmit}>
-                <FormControl component="fieldset" sx={{ mb: 3, width: '100%' }}>
-                  <FormLabel component="legend" sx={{ color: '#4A148C', mb: 1 }}>Select Role</FormLabel>
-                  <RadioGroup
-                    row
-                    name="role"
-                    value={formData.role}
-                    onChange={handleChange}
-                    sx={{ justifyContent: 'space-around' }}
-                  >
-                    <FormControlLabel
-                      value="Analyst"
-                      control={
-                        <Radio 
-                          icon={<AnalystIcon />} 
-                          checkedIcon={<AnalystIcon />}
-                          sx={{ 
-                            color: '#4A148C',
-                            '&.Mui-checked': { color: '#4A148C' }
-                          }}
-                        />
-                      }
-                      label="Analyst"
-                    />
-                    <FormControlLabel
-                      value="Coach"
-                      control={
-                        <Radio 
-                          icon={<CoachIcon />} 
-                          checkedIcon={<CoachIcon />}
-                          sx={{ 
-                            color: '#4A148C',
-                            '&.Mui-checked': { color: '#4A148C' }
-                          }}
-                        />
-                      }
-                      label="Coach"
-                    />
-                  </RadioGroup>
-                </FormControl>
 
                 <TextField
                   fullWidth
