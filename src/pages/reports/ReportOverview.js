@@ -67,10 +67,11 @@ useEffect(() => {
   // Find the current team 
   const currentTeam = teams?.find(team => team?.id === report?.team) || {
   id: report?.team,
-  name: 'Unknown Team',
-  logo: '/logos/default.png',
-  color: theme.palette.primary.main
+  name: report?.team_name || 'Unknown Team',   
+  logo: report?.team_logo || '/logos/default.png', 
+  color: theme.palette.primary.main,
 };
+
   
   // Prepare chart data from real report data
   const prepareChartData = () => {
