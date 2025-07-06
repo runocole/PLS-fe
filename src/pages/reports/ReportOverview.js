@@ -32,9 +32,13 @@ import {
   ArrowBack as BackIcon,
   BarChart as BarChartIcon,
   TrendingUp as TrendingUpIcon,
+  Print as PrintIcon,
+  Download as DownloadIcon,
 } from '@mui/icons-material';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
 import { Pie, Bar } from 'react-chartjs-2';
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 // Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
@@ -135,54 +139,177 @@ useEffect(() => {
   const handleBackClick = () => {
     navigate('/dashboard');
   };
-  
-  if (loading?.report) {
-    return (
+
+  // PRINT FUNCTION
+  const handlePrintReport = () => {
+    const printContent = document.createElement('div');
+    printContent.innerHTML = `
+      <div style="text-align: center; color: white;">
+        <img src="${currentTeam.logo}" alt="${currentTeam.name}" width="100" style="margin-bottom: 15px;" />
+        <h1 style="font-family: cursive; font-size: 32px; color: #4fc3f7;">${currentTeam.name} Scouting Report</h1>
+        <hr style="margin: 20px 0; border-color: #ffffff55;" />
+      </div>
+
+      <h2 style="font-family: cursive; font-size: 24px; color: #f06292;">Key Players</h2>
+      <table style="width: 100%; border-collapse: collapse; color: white;">
+        <thead style="background-color: #1a1a1a;">
+          <tr>
+            <th style="padding: 8px;">Name</th>
+            <th style="padding: 8px;">Position</th>
+            <th style="padding: 8px;">Rating</th>
+            <th style="padding: 8px;">Strengths</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${
+            report.key_players.map(player => `
+              <tr>
+                <td style="padding: 8px;">${player.name}</td>
+                <td style="padding: 8px;">${player.position || '-'}</td>
+                <td style="padding: 8px;">${player.rating || '-'}</td>
+                <td style="padding: 8px;">${player.strengths || '-'}</td>
+              </tr>
+            `).join('')
+          }
+        </tbody>
+      </table>
+
+      <h2 style="font-family: cursive; font-size: 24px; color: #4db6ac;">Match Stats</h2>
+      <table style="width: 100%; border-collapse: collapse; color: white;">
+        ${
+          Object.entries(report.match_stats || {}).map(([key, value]) => `
+            <tr>
+              <td style="padding: 8px; font-weight: bold;">${key}</td>
+              <td style="padding: 8px;">${value || '-'}</td>
+            </tr>
+          `).join('')
+        }
+      </table>
+
+      <h2 style="font-family: cursive; font-size: 24px; color: #9575cd;">Tactical Summary</h2>
+      <p><strong>Formation:</strong> ${report.tactical_summary?.formation || '-'}</p>
+      <p><strong>Overview:</strong> ${report.tactical_summary?.overview || '-'}</p>
+      <p><strong>Strengths:</strong> ${report.tactical_summary?.strengths || '-'}</p>
+      <p><strong>Weaknesses:</strong> ${report.tactical_summary?.weaknesses || '-'}</p>
+
+      <h2 style="font-family: cursive; font-size: 24px; color: #ff8a65;">Performance Insights</h2>
+      <p>${report.performance_insights || 'No insights provided.'}</p>
+
+      <hr style="border-color: #ffffff55;" />
+      <p style="text-align: center; font-size: 12px;">Generated on ${new Date().toLocaleString()}</p>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>${currentTeam.name} Scouting Report</title>
+          <style>
+            body {
+              font-family: 'Segoe UI', cursive, sans-serif;
+              background-color: black;
+              color: white;
+              padding: 30px;
+            }
+            table, th, td {
+              border: 1px solid #ffffff22;
+            }
+            th, td {
+              padding: 10px;
+              text-align: left;
+            }
+            h1, h2 {
+              margin-top: 30px;
+            }
+            @media print {
+              button { display: none; }
+            }
+          </style>
+        </head>
+        <body>
+          ${printContent.innerHTML}
+          <div style="text-align: center; margin-top: 20px;">
+            <button onclick="window.print()" style="padding: 10px 20px; font-size: 16px; margin-right: 10px;">Print Report</button>
+            <button onclick="window.close()" style="padding: 10px 20px; font-size: 16px;">Close</button>
+          </div>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+};
+
+   
+  const handleDownloadPDF = () => {
+  const reportElement = document.getElementById("report-content");
+
+  html2canvas(reportElement, {
+    backgroundColor: "#000", 
+    scale: 2,
+  }).then((canvas) => {
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "mm", "a4");
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`${currentTeam.name}-Scouting-Report.pdf`);
+  });
+};
+
+  if (loading?.report) return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
         <CircularProgress />
       </Box>
     );
-  }
-  
+
   if (error?.report) {
-    
     return (
       <Box sx={{ p: 3 }}>
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error.report}
-        </Alert>
+        <Alert severity="error" sx={{ mb: 2 }}>{error.report}</Alert>
         <Button variant="contained" onClick={handleBackClick} startIcon={<BackIcon />}>
           Back to Dashboard
         </Button>
       </Box>
     );
   }
-  if (!report) {
-  return (
-    <Box sx={{ p: 3 }}>
-      <Alert severity="info">No report available for this team yet.</Alert>
-      <Button onClick={handleBackClick} startIcon={<BackIcon />} variant="contained" sx={{ mt: 2 }}>
-        Back to Dashboard
-      </Button>
-    </Box>
-  );
-}
 
-  return (
-    <Box>
+  if (!report) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="info">No report available for this team yet.</Alert>
+        <Button onClick={handleBackClick} startIcon={<BackIcon />} variant="contained" sx={{ mt: 2 }}>
+          Back to Dashboard
+        </Button>
+      </Box>
+    );
+  }
+
+ return (
+  <Box id="report-content">
+
       <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
         <IconButton onClick={handleBackClick} sx={{ mr: 1 }}>
           <BackIcon />
         </IconButton>
-        <Avatar 
-          src={currentTeam?.logo} 
-          alt={currentTeam?.name}
-          sx={{ width: 50, height: 50 }}
-        />
-        <Typography variant="h4" component="h1" fontWeight="700">
-          {currentTeam.name} Scouting Report
-        </Typography>
-      </Box>
+        <Avatar src={currentTeam?.logo} alt={currentTeam?.name} sx={{ width: 50, height: 50 }} />
+        <Typography variant="h4" fontWeight="700">{currentTeam.name} Scouting Report</Typography>
+        <Button
+  variant="contained"
+  startIcon={<PrintIcon />}
+  onClick={handlePrintReport}
+  sx={{ ml: 2 }}
+>
+  Print Report
+</Button>
+<Button
+  variant="outlined"
+  startIcon={<DownloadIcon />} // import DownloadIcon from MUI
+  onClick={handleDownloadPDF}
+  sx={{ ml: 2 }}
+>
+  Download PDF
+</Button>
+ </Box>
       
       <Grid container spacing={3}>
         {/* Key Players Section */}
