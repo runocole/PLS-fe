@@ -1,7 +1,8 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk,createAction } from '@reduxjs/toolkit';
 import { reportsAPI } from '../../services/api';
 
-// Async thunks
+export const setCurrentReport = createAction('reports/setCurrentReport');
+
 
 export const fetchReports = createAsyncThunk(
   'reports/fetchReports',
@@ -164,6 +165,9 @@ const reportsSlice = createSlice({
         state.error.report = action.payload;
         state.currentReport = null;
       })
+      .addCase(setCurrentReport, (state, action) => {
+            state.currentReport = action.payload;
+      })
 
       // Fetch Team Reports (Coach)
       .addCase(fetchTeamReports.pending, (state) => {
@@ -260,7 +264,6 @@ export const {
   clearDeleteError,
   clearCurrentReport,
   clearTeamReports,
-  setCurrentReport,
 } = reportsSlice.actions;
 
 export default reportsSlice.reducer;

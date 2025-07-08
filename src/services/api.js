@@ -168,7 +168,9 @@ export const reportsAPI = {
   getTeamReports: (teamId) => api.get(`/reports/team/${teamId}/`),
   updateReportStatus: (id, status) => api.put(`/reports/${id}/status/`, { status }),
   getTeamReports: (teamId) => api.get(`/reports/team/${teamId}/`),
-getMyReport: (teamId) => api.get(`/reports/my-report/team/${teamId}/`), 
+  getMyReport: (teamId) => api.get(`/reports/my-report/team/${teamId}/`), 
+  getMyDraftReport: (teamId) => api.get(`/reports/my-draft/team/${teamId}/`),
+
 };
 
 // Players API

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchReport, createReport, updateReport } from '../../store/slices/reportsSlice';
+import { setCurrentReport } from '../../store/slices/reportsSlice';
 import {useLocation} from 'react-router-dom';
 import {
   Box,
@@ -120,7 +121,7 @@ const getErrorMessage = (err) => {
   
   // Reset form when team changes
   useEffect(() => {
-    if (!report || report.team !== parseInt(teamId)) {
+  if (!report && teamId) {
       setFormState({
         key_players: [
           { id: 1, name: '', position: '', rating: '', strengths: '' }
@@ -246,66 +247,71 @@ const getErrorMessage = (err) => {
     dispatch(fetchReport(teamId));
   };
   
-  const handleSave = async () => {
-    try {
-      if (report?.id) {
-        console.log("SENDING updateReport:", {
-  reportId: report.id,
-  reportData: { ...formState, team_id: teamId }
-});
-        await dispatch(updateReport({ 
-          reportId: report.id, 
-          reportData: { ...formState, team_id: parseInt(teamId) } 
-        })).unwrap();
-      } else {
-        await dispatch(createReport({ 
-          ...formState, 
-          team_id: parseInt(teamId) 
-        })).unwrap();
-      }
-      handleSuccessfulSave();
-    } catch (err) {
-      let errorMessage = getErrorMessage(err);
-      if (errorMessage.includes('unique') || errorMessage.includes('already exists')) {
-        errorMessage = 'You have already created a report for this team. Please edit your existing report.';
-      }
-      setSnackbar({
-        open: true,
-        message: errorMessage,
-        severity: 'error',
-      });
-    }
-  };
-  
-  const handleMarkComplete = async () => {
-    const updatedData = { 
-      ...formState, 
-      status: 'completed'
+ const handleSaveDraft = async () => {
+  try {
+    const dataToSave = {
+      ...formState,
+      team_id: parseInt(teamId),
+      is_draft: true,
+      status: 'not-started'
     };
-    
-    setFormState(updatedData);
-    
-    try {
-      if (report?.id) {
-        await dispatch(updateReport({ 
-          reportId: report.id, 
-         reportData: { ...updatedData, team_id: parseInt(teamId) }
-        })).unwrap();
-      } else {
-        await dispatch(createReport({ 
-          ...updatedData, 
-          team_id: teamId 
-        })).unwrap();
-      }
-      handleSuccessfulSave();
-    } catch (err) {
-      setSnackbar({
-        open: true,
-        message: getErrorMessage(err),
-        severity: 'error',
-      });
+
+    let savedReport;
+    if (report?.id) {
+      savedReport = await dispatch(updateReport({
+        reportId: report.id,
+        reportData: dataToSave
+      })).unwrap();
+    } else {
+      savedReport = await dispatch(createReport(dataToSave)).unwrap();
     }
-  };
+
+    dispatch(setCurrentReport(savedReport)); // Update Redux
+    setFormState(savedReport); // Keep your form populated
+    handleSuccessfulSave();
+  } catch (err) {
+    let errorMessage = getErrorMessage(err);
+    if (errorMessage.includes('unique') || errorMessage.includes('already exists')) {
+      errorMessage = 'You have already created a report for this team. Please edit your existing report.';
+    }
+    setSnackbar({
+      open: true,
+      message: errorMessage,
+      severity: 'error',
+    });
+  }
+};
+
+const handleMarkComplete = async () => {
+    const dataToSave = {
+        ...formState,
+        team_id: parseInt(teamId),
+        status: 'completed',
+        is_draft: false
+    };
+
+    try {
+        let savedReport;
+        if (report?.id) {
+            savedReport = await dispatch(updateReport({
+                reportId: report.id,
+                reportData: dataToSave
+            })).unwrap();
+        } else {
+            savedReport = await dispatch(createReport(dataToSave)).unwrap();
+        }
+
+        dispatch(setCurrentReport(savedReport));
+        setFormState(savedReport);
+        handleSuccessfulSave();
+    } catch (err) {
+        setSnackbar({
+            open: true,
+            message: getErrorMessage(err),
+            severity: 'error',
+        });
+    }
+};
   
   const handleBackClick = () => {
     navigate('/analyst-dashboard');
@@ -450,7 +456,7 @@ const getErrorMessage = (err) => {
             <Button 
               variant="outlined" 
               startIcon={<SaveIcon />} 
-              onClick={handleSave}
+              onClick={handleSaveDraft}
               disabled={loading?.create || loading?.update}
               sx={{
                 bgcolor: 'background.paper',
