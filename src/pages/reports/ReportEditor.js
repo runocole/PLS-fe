@@ -64,29 +64,31 @@ const ReportEditor = () => {
   };
   
   // Form state
-  const [formState, setFormState] = useState({
-    key_players: [
-      { id: 1, name: '', position: '', rating: '', strengths: '' }
-    ],
-    match_stats: {
-      possession: '',
-      shots: '',
-      shotsOnTarget: '',
-      passes: '',
-      passAccuracy: '',
-      corners: '',
-      fouls: ''
-    },
-    tactical_summary: {
-      formation: '',
-      overview: '',
-      strengths: '',
-      weaknesses: '',
-    },
-    performance_insights: '',
-    status: 'in-progress',
-  });
-  
+  const initialFormState = {
+  key_players: [
+    { id: 1, name: '', position: '', rating: '', strengths: '' }
+  ],
+  match_stats: {
+    possession: '',
+    shots: '',
+    shotsOnTarget: '',
+    passes: '',
+    passAccuracy: '',
+    corners: '',
+    fouls: ''
+  },
+  tactical_summary: {
+    formation: '',
+    overview: '',
+    strengths: '',
+    weaknesses: '',
+  },
+  performance_insights: '',
+  status: 'in-progress',
+};
+
+const [formState, setFormState] = useState(initialFormState);
+
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
@@ -165,7 +167,8 @@ const getErrorMessage = (err) => {
       try {
       const res = await fetch(`/api/teams/${teamId}/`,{
         headers : {
-          Authorization: 'Bearer ${tokens}',
+         Authorization: `Bearer ${tokens}`,
+
         },
       });
       const data = await res.json();
@@ -255,7 +258,8 @@ const getErrorMessage = (err) => {
       is_draft: true,
       status: 'not-started'
     };
-
+    console.log('Data to save:', dataToSave);
+    
     let savedReport;
     if (report?.id) {
       savedReport = await dispatch(updateReport({
@@ -267,7 +271,11 @@ const getErrorMessage = (err) => {
     }
 
     dispatch(setCurrentReport(savedReport)); // Update Redux
-    setFormState(savedReport); // Keep your form populated
+    setFormState(savedReport);
+    // When switching teams:
+dispatch(setCurrentReport(null)); // clear Redux currentReport
+setFormState(initialFormState);   // clear local form state
+
     handleSuccessfulSave();
   } catch (err) {
     let errorMessage = getErrorMessage(err);
