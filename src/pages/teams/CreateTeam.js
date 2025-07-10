@@ -2,6 +2,8 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { fetchTeams } from '../../store/slices/teamsSlice';
+
 import {
   Box,
   Paper,
@@ -75,8 +77,9 @@ const CreateTeam = () => {
         data.append('logo', formData.logo);
       }
 
-      await teamsAPI.createTeam(data);
-      navigate('/analyst-dashboard');
+     await teamsAPI.createTeam(data);
+        dispatch(fetchTeams());
+         navigate('/analyst-dashboard');
     } catch (err) {
       console.error('Error creating team:', err);
       setError(err.response?.data?.message || err.response?.data?.error || 'Something went wrong.');
