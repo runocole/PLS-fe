@@ -47,7 +47,7 @@ export const fetchMyReport = createAsyncThunk(
   'reports/fetchMyReport',
   async (teamId, { rejectWithValue }) => {
     try {
-      const response = await reportsAPI.getMyReport(teamId);
+      const response = await reportsAPI.getMyDraftReport(teamId);
       return response.data;
     } catch (error) {
       if (error.response?.status === 404) {
@@ -57,6 +57,7 @@ export const fetchMyReport = createAsyncThunk(
     }
   }
 );
+
 
 export const createReport = createAsyncThunk(
   'reports/createReport',
@@ -164,9 +165,6 @@ const reportsSlice = createSlice({
         state.loading.report = false;
         state.error.report = action.payload;
         state.currentReport = null;
-      })
-      .addCase(setCurrentReport, (state, action) => {
-            state.currentReport = action.payload;
       })
 
       // Fetch Team Reports (Coach)

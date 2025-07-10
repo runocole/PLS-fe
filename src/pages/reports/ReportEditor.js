@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchReport, createReport, updateReport } from '../../store/slices/reportsSlice';
+import { fetchMyReport, createReport, updateReport } from '../../store/slices/reportsSlice';
 import { setCurrentReport } from '../../store/slices/reportsSlice';
 import {useLocation} from 'react-router-dom';
 import {
@@ -88,6 +88,7 @@ const ReportEditor = () => {
 };
 
 const [formState, setFormState] = useState(initialFormState);
+console.log("Initialized formState:", formState);
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -112,14 +113,24 @@ const getErrorMessage = (err) => {
 
   // Populate form with existing report data if available
   useEffect(() => {
-    dispatch(fetchReport(teamId));
+   dispatch(fetchMyReport(teamId));
   }, [dispatch, teamId]);
   
+ useEffect(() => {
+  if (report && Object.keys(report).length > 0) {
+    console.log("Setting formState from report:", report);
+    setFormState(report);
+  } else {
+    console.log("No report found, using initialFormState.");
+  }
+}, [report]);
+
+
   useEffect(() => {
-    if (report && Object.keys(report).length > 0) {
-      setFormState(report);
-    }
-  }, [report]);
+  console.log('Loaded report:', report);
+  console.log('Form state:', formState);
+}, [report, formState]);
+
   
   // Reset form when team changes
   useEffect(() => {
@@ -247,7 +258,7 @@ const getErrorMessage = (err) => {
   const handleSuccessfulSave = () => {
     setSaveSuccess(true);
     // Refresh the report list in parent component
-    dispatch(fetchReport(teamId));
+    dispatch(fetchMyReport(teamId));
   };
   
  const handleSaveDraft = async () => {
@@ -272,9 +283,7 @@ const getErrorMessage = (err) => {
 
     dispatch(setCurrentReport(savedReport)); // Update Redux
     setFormState(savedReport);
-    // When switching teams:
-dispatch(setCurrentReport(null)); // clear Redux currentReport
-setFormState(initialFormState);   // clear local form state
+    
 
     handleSuccessfulSave();
   } catch (err) {
